@@ -1,8 +1,16 @@
-install.packages('gdata')
+#install.packages('gdata')
 library(gdata)
 #wget http://www.ons.gov.uk/ons/rel/vsob2/weekly-provisional-figures-on-deaths-registered-in-england-and-wales/week-ending-06-03-2015/weekly-deaths---week-10-2015.xls
-data <- read.xls("weekly-deaths---week-10-2015.xls",sheet=4,header=T)
-
+parseFile <- function(filename) {
+  filters <- c("Persons","Males","Females")
+  data <- read.xls(filename,sheet=4,header=T)
+  ret <- data.frame()
+  for (filter in filters) {
+    ret <- rbind(ret, getDeaths(data, filter))
+  }
+  ret$filename <- filename
+  ret
+}
 getDeaths <- function(data, filter) {
   row <- head(grep(filter, data$Contents),1)
   
@@ -26,3 +34,6 @@ getDeaths <- function(data, filter) {
   ret$filter <- filter
   ret
 }
+filename <- "weekly-deaths---week-10-2015.xls"
+
+ret <- parseFile(filename)
