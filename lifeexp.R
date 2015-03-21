@@ -6,3 +6,4 @@ ret$le <- as.numeric(as.vector(ret$le))
 ret <- ret[!is.na(ret$le),]
 head(ret)
 write.csv(ret,"lifeexp-male-2010.csv")
+
