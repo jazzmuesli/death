@@ -24,4 +24,13 @@ efac <- read.csv("death-extraFactors.csv")
 names(efac)[2] <- "area"
 efac <- efac[,grep("X", names(efac), invert=T)]
 g <- unique(merge(m,efac))
+
+mlsoa <- read.csv("~/ohdh14/lsoa.csv",header=F)
+mlsoa <- unique(mlsoa[,c(3,5)])
+names(mlsoa) <- c("area","MSOA")
+
+income <- read.csv("201308NIC-MSOA-practices.csv")
+income <- merge(mlsoa, income)
+income <- aggregate(annual_income ~ area, income, median)
+g <- merge(g, income)
 write.csv(g,"lifeexp-extrafac.csv",row.names=F)
