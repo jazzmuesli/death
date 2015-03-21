@@ -8,7 +8,7 @@ leconst <- merge(lifeexp, lad, by.x="area", by.y="LAD11CD")
 m <- merge(leconst,mps, by.x="PCON11NM",by.y="V1")
 
 m <- m[,c("PCON11NM","area","le","V2")]
-names(m) <- c("const","area","le","Party")
+names(m) <- c("const","area","le","Party.Name")
 
 #plot(m$V2, m$le)
 
@@ -22,5 +22,6 @@ write.csv(m,"lifeexp-mp-margin.csv",row.names=F)
 
 efac <- read.csv("death-extraFactors.csv")
 names(efac)[2] <- "area"
-m <- merge(m,efac)
-write.csv(m,"lifeexp-extrafac.csv",row.names=F)
+efac <- efac[,grep("X", names(efac), invert=T)]
+g <- unique(merge(m,efac))
+write.csv(g,"lifeexp-extrafac.csv",row.names=F)
