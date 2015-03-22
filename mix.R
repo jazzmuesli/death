@@ -2,6 +2,8 @@ options(stringsAsFactors = FALSE)
 
 lifeexp <- read.csv("lifeexp-2010.csv")
 mps <- read.csv("result.csv",header=F)
+mp <- read.csv("MP_1992-2010.csv")
+#TODO: add mp as mp.year to the merged data.frame
 lad <- read.csv("LAD11_PCON11_UK_LU.csv")
 leconst <- merge(lifeexp, lad, by.x="area", by.y="LAD11CD")
 m <- merge(leconst,mps, by.x="PCON11NM",by.y="V1")
@@ -31,3 +33,4 @@ income <- merge(mlsoa, income)
 income <- aggregate(annual_income ~ area, income, median)
 g <- merge(g, income)
 write.csv(g,"lifeexp-extrafac.csv",row.names=F)
+
