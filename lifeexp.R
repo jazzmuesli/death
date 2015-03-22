@@ -1,15 +1,17 @@
 library(gdata)
 getLifeExp <- function(s, type) {
   data <- read.xls("~/Downloads/referencetable1_tcm77-332890.xls",sheet=s,header=F)
-  ret <- data[grep("^E[0-9]+$", data$V1),c("V1","V80")]
-  names(ret) <- c("area", "le")
-  ret$le <- as.numeric(as.vector(ret$le))
-  ret <- ret[!is.na(ret$le),]
-  names(ret)[2] <- paste0(type, ".le")
-  ret
+  # Match 1991-1993 Life expectancy at birth 
+  cols <- paste0("V",seq(4,80,4))
+  ret <- data[grep("^E[0-9]+$", data$V1),c("V1",cols)]
+  names(ret) <- c("area",paste0(type,".le.",data[5,cols]))
+  ret[,2:length(ret)] <- as.numeric(as.matrix(ret[,2:length(ret)]))
+  # male.le.1991-1993 -> male.le.1991
+  names(ret) <- gsub("(.*?)-.*","\\1",names(ret))
+  na.omit(ret)
 }
 male <- getLifeExp(18,"male")
 female <- getLifeExp(22,"female")
 ret <- merge(male,female)
-write.csv(ret,"lifeexp-2010.csv")
+write.csv(ret,"lifeexp-1991-2010.csv")
 
