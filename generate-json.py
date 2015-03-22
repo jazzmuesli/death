@@ -5,13 +5,13 @@ import csv
 def fix_text(str):
   return str.decode('ascii','ignore')
 def derive_party(party):
-  parties = ["conservative","labour","liberal","respect"]
+  parties = ["conservative","labour","liberal"]
   for p in parties:
     if p in party.lower():
       return p
   if "Speaker" in party:
     return 'conservative'
-  return party
+  return "other"
 lifeexp = dict()
 with open('lifeexp-1991-2010.csv', 'rb') as csvfile:
   spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
@@ -22,6 +22,8 @@ with open('lifeexp-1991-2010.csv', 'rb') as csvfile:
       continue
     area = row[1]
     year = int(row[2])
+    if year < 1992:
+      continue
     gender = row[3]
     le = row[4]
     lifeexp[area] = lifeexp.get(area, dict())
@@ -80,17 +82,23 @@ for area in mps:
 #sys.exit(0)
 data = json.loads(file('lad.json').read())
 features = data['features']
+new_features = []
 for i in range(len(features)):
   feature = features[i]
   area = feature['properties']['LAD13CD']
-  feature['properties']['lifeexp'] = lifeexp.get(area, dict())
-  feature['properties']['mps'] = mps.get(area, dict())
-  x = feature['properties']['mps']
+  try:
+    feature['properties']['lifeexp'] = lifeexp[area]#.get(area, dict())
+    feature['properties']['mps'] = mps[area]#.get(area, dict())
+    x = feature['properties']['mps']
+    new_features.append(feature)
+  except:
+    pass
   #for year in x:
     #print "\n".join(x[year].keys())
   #print ["\n".join(x.keys()) for x in feature['properties']['mps'].values()]
 #print mps#, indent=True)
-
+#E06000053
+data['features'] = new_features
 text = json.dumps(data, indent=True) 
 print "var  localAuthorities =", text + ";"
 #print text.encode('ascii','ignore')
