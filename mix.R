@@ -7,6 +7,8 @@ mp <- read.csv("MP_1992-2010.csv")
 lad <- read.csv("LAD11_PCON11_UK_LU.csv")
 leconst <- merge(lifeexp, lad, by.x="area", by.y="LAD11CD")
 m <- merge(leconst,mps, by.x="PCON11NM",by.y="V1")
+write.csv(sqldf("select LAD11CD as area, Year as year, Party as party, count(*) as count from m where area != '' group by area, year,party order by 1,2"), "party-year-area.csv")
+m <- merge(lad,mp, by.x="PCON11NM",by.y="Constituency")
 
 m <- m[,c("PCON11NM","area","male.le","female.le","V2")]
 names(m) <- c("const","area","male.le","female.le","Party.Name")
